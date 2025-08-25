@@ -154,12 +154,14 @@ function LoadMainScript()
         game:GetService("Players").LocalPlayer:Kick("Do not Support, Please wait...")
     end
 
-    -- ... (resto do código original continua aqui)
+    -- ... (COLE AQUI O RESTO DO SEU SCRIPT ORIGINAL)
 
     -- Exemplo de como acessar a chave validada posteriormente se necessário
     print("Chave validada:", KeyInput)
 end
 
+-- Impedir que o script continue sem a verificação
+-- O script principal só será executado após a verificação bem-sucedida
 if game.PlaceId == 2753915549 then
     World1 = true
 elseif game.PlaceId == 4442272183 then
