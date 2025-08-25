@@ -1,24 +1,163 @@
---// Sistema de Key Simples
+-- Sistema de Verificação de Key
+local KeyValid = false
+local KeyInput = ""
 
--- Coloca aqui a tua key
-local Key = "Lego_Lua_3DNK4S"
+-- Interface de Verificação
+local VerificationUI = Instance.new("ScreenGui")
+VerificationUI.Name = "KeyVerificationUI"
+VerificationUI.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+VerificationUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- Mensagem pro usuário
-print("Para usar o script, pegue sua key no link abaixo:")
-print("👉 Link: https://direct-link.net/1387897/zdQJqShoD8zr")
+-- Frame principal
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 400, 0, 250)
+MainFrame.Position = UDim2.new(0.5, -200, 0.5, -125)
+MainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = VerificationUI
 
--- Pede a key
-rconsoleprint("@@WHITE@@")
-rconsoleprint("Digite sua key: ")
+-- Título
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Text = "Max Hub - Verificação"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 16
+Title.Parent = MainFrame
 
-local Input = rconsoleinput()
+-- Botão de fechar
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -30, 0, 5)
+CloseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Text = "X"
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.TextSize = 14
+CloseButton.Parent = Title
 
-if Input == Key then
-    print("✅ Key correta! Carregando script...")
-    -- Continua o resto do código normalmente daqui pra frente
-else
-    print("❌ Key inválida! Pegue a key no link e tente de novo.")
-    return -- Cancela o script
+CloseButton.MouseButton1Click:Connect(function()
+    VerificationUI:Destroy()
+    game:GetService("Players").LocalPlayer:Kick("Verificação cancelada")
+end)
+
+-- Instruções
+local Instructions = Instance.new("TextLabel")
+Instructions.Size = UDim2.new(0.9, 0, 0, 60)
+Instructions.Position = UDim2.new(0.05, 0, 0.2, 0)
+Instructions.BackgroundTransparency = 1
+Instructions.TextColor3 = Color3.fromRGB(255, 255, 255)
+Instructions.Text = "Entre com a chave para acessar o script\nLink para obter a chave: https://direct-link.net/1387897/zdQJqShoD8zr"
+Instructions.Font = Enum.Font.Gotham
+Instructions.TextSize = 14
+Instructions.TextWrapped = true
+Instructions.Parent = MainFrame
+
+-- Campo de entrada da key
+local KeyBox = Instance.new("TextBox")
+KeyBox.Size = UDim2.new(0.8, 0, 0, 40)
+KeyBox.Position = UDim2.new(0.1, 0, 0.5, 0)
+KeyBox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+KeyBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+KeyBox.PlaceholderText = "Cole sua chave aqui"
+KeyBox.Font = Enum.Font.Gotham
+KeyBox.TextSize = 14
+KeyBox.Parent = MainFrame
+
+-- Botão de verificar
+local VerifyButton = Instance.new("TextButton")
+VerifyButton.Size = UDim2.new(0.6, 0, 0, 40)
+VerifyButton.Position = UDim2.new(0.2, 0, 0.75, 0)
+VerifyButton.BackgroundColor3 = Color3.fromRGB(80, 120, 200)
+VerifyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+VerifyButton.Text = "Verificar Chave"
+VerifyButton.Font = Enum.Font.GothamBold
+VerifyButton.TextSize = 14
+VerifyButton.Parent = MainFrame
+
+-- Status
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Size = UDim2.new(0.8, 0, 0, 20)
+StatusLabel.Position = UDim2.new(0.1, 0, 0.65, 0)
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+StatusLabel.Text = ""
+StatusLabel.Font = Enum.Font.Gotham
+StatusLabel.TextSize = 12
+StatusLabel.Parent = MainFrame
+
+-- Função de verificação
+local function VerifyKey(key)
+    local validKeys = {
+        "Lego_Lua_3DNK4S",
+        -- Adicione outras chaves válidas aqui se necessário
+    }
+    
+    for _, validKey in pairs(validKeys) do
+        if key == validKey then
+            return true
+        end
+    end
+    return false
+end
+
+-- Evento do botão de verificação
+VerifyButton.MouseButton1Click:Connect(function()
+    local key = KeyBox.Text:gsub("%s+", "") -- Remove espaços
+    
+    if VerifyKey(key) then
+        StatusLabel.Text = "Chave válida! Carregando script..."
+        StatusLabel.TextColor3 = Color3.fromRGB(50, 200, 50)
+        
+        KeyValid = true
+        KeyInput = key
+        
+        -- Aguardar um pouco para mostrar a mensagem
+        wait(1.5)
+        VerificationUI:Destroy()
+        
+        -- Continuar com o script principal
+        LoadMainScript()
+    else
+        StatusLabel.Text = "Chave inválida! Tente novamente."
+        StatusLabel.TextColor3 = Color3.fromRGB(200, 50, 50)
+    end
+end)
+
+-- Focar no campo de texto automaticamente
+game:GetService("RunService").RenderStepped:Connect(function()
+    if KeyBox:IsDescendantOf(game) and not KeyBox:IsFocused() then
+        KeyBox:CaptureFocus()
+    end
+end)
+
+-- Função para carregar o script principal
+function LoadMainScript()
+    -- Verificar se a key é válida antes de continuar
+    if not KeyValid then
+        game:GetService("Players").LocalPlayer:Kick("Verificação de chave falhou")
+        return
+    end
+
+    -- Script principal começa aqui
+    if game.PlaceId == 2753915549 then
+        World1 = true
+    elseif game.PlaceId == 4442272183 then
+        World2 = true
+    elseif game.PlaceId == 7449423635 then
+        World3 = true
+    else
+        game:GetService("Players").LocalPlayer:Kick("Do not Support, Please wait...")
+    end
+
+    -- ... (resto do código original continua aqui)
+
+    -- Exemplo de como acessar a chave validada posteriormente se necessário
+    print("Chave validada:", KeyInput)
 end
 
 if game.PlaceId == 2753915549 then
